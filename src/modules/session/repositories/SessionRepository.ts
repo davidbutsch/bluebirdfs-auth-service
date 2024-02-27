@@ -12,10 +12,51 @@ export class SessionRepository implements ISessionRepository {
 
     return null;
   }
-  findByAccessToken(at: string): Promise<Session | null> {
-    throw new Error("Method not implemented.");
+  async findByAccessToken(at: string): Promise<Session | null> {
+    const userSession = await redis.call(
+      "FT.SEARCH",
+      "idx:session",
+      `@accessToken:(${at})`
+    );
+
+    /**
+     * FT.SEARCH return data:
+     *  [
+     *    1,
+     *    'keyName',
+     *    [
+     *      '$',
+     *      'keyData'
+     *    ]
+     *  ]
+     */
+    if (Array.isArray(userSession)) {
+      const key = userSession[2]?.[1];
+
+      if (typeof key === "string") {
+        const session: Session = JSON.parse(key);
+        return session;
+      }
+    }
+
+    return null;
   }
-  findByRefreshToken(rt: string): Promise<Session | null> {
-    throw new Error("Method not implemented.");
+  async findByRefreshToken(rt: string): Promise<Session | null> {
+    const userSession = await redis.call(
+      "FT.SEARCH",
+      "idx:session",
+      `@refreshToken:(${rt})`
+    );
+
+    if (Array.isArray(userSession)) {
+      const key = userSession[2]?.[1];
+
+      if (typeof key === "string") {
+        const session: Session = JSON.parse(key);
+        return session;
+      }
+    }
+
+    return null;
   }
 }
