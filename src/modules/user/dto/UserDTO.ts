@@ -1,4 +1,9 @@
-import { IsDefined, IsNotEmptyObject, ValidateNested } from "class-validator";
+import {
+  IsDefined,
+  IsNotEmptyObject,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import {
   User,
   UserFlags,
@@ -11,6 +16,8 @@ import {
 import { Type } from "class-transformer";
 
 export class UserDTO {
+  @IsString() id: string;
+
   @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
@@ -38,8 +45,14 @@ export class UserDTO {
   static toDTO(domain: User): UserDTO {
     if (domain instanceof UserModel) domain = domain.toObject();
 
-    const { security, ...DTO } = domain;
+    const userDTO: UserDTO = {
+      id: domain._id,
+      profile: domain.profile,
+      preferences: domain.preferences,
+      flags: domain.flags,
+      metadata: domain.metadata,
+    };
 
-    return DTO;
+    return userDTO;
   }
 }
