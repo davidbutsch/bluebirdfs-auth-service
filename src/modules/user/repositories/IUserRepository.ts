@@ -6,8 +6,12 @@ export interface IUserRepository {
   findById(
     id: Types.ObjectId | string | undefined,
     options?: QueryOptions
-  ): Promise<User | null>;
-  create(User: Partial<User>): Promise<User>;
+  ): Promise<(User & Document) | null>;
+  findByEmail(
+    email: string,
+    options?: QueryOptions
+  ): Promise<(User & Document) | null>;
+  create(User: Partial<User>): Promise<User & Document>;
   update(
     id: Types.ObjectId | string | undefined,
     update: UpdateQuery<User & Document>

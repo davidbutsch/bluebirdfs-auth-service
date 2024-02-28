@@ -1,16 +1,20 @@
 import { Document, QueryOptions, Types, UpdateQuery } from "mongoose";
-
-import { IUserRepository } from "./IUserRepository";
-import { User } from "@/modules/user";
+import { IUserRepository, User, UserModel } from "@/modules/user";
 
 export class UserRepository implements IUserRepository {
   findById(
     id: string | Types.ObjectId | undefined,
     options?: QueryOptions
-  ): Promise<User | null> {
-    throw new Error("Method not implemented.");
+  ): Promise<(User & Document) | null> {
+    return UserModel.findById(id, null, options);
   }
-  create(User: Partial<User>): Promise<User> {
+  async findByEmail(
+    email: string,
+    options?: QueryOptions
+  ): Promise<(User & Document) | null> {
+    return UserModel.findOne({ "profile.email": email }, null, options);
+  }
+  create(User: Partial<User>): Promise<User & Document> {
     throw new Error("Method not implemented.");
   }
   update(
