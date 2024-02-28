@@ -1,5 +1,5 @@
-import { IsDate } from "class-validator";
+import { IsDateString } from "class-validator";
 
 export class UserMetadata {
-  @IsDate() createdAt: Date;
+  @IsDateString() createdAt: string;
 }
