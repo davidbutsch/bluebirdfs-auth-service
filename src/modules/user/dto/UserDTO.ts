@@ -46,7 +46,7 @@ export class UserDTO {
     if (domain instanceof UserModel) domain = domain.toObject();
 
     const userDTO: UserDTO = {
-      id: domain._id,
+      id: domain._id.toString(),
       profile: domain.profile,
       preferences: domain.preferences,
       flags: domain.flags,
