@@ -1,8 +1,8 @@
+import { ACCESS_TOKEN_LIFETIME, generateToken } from "@/common";
 import { ISessionRepository, Session } from "@/modules/session";
 
-import { redis } from "@/libs";
-import { ACCESS_TOKEN_LIFETIME, generateToken } from "@/common";
 import { Types } from "mongoose";
+import { redis } from "@/libs";
 
 export class SessionRepository implements ISessionRepository {
   async findById(id: string): Promise<Session | null> {
