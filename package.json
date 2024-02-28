@@ -16,7 +16,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
     "axios": "^1.6.5",
+    "bcrypt": "^5.1.1",
     "bullmq": "^5.1.7",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
