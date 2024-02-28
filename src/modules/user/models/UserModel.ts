@@ -46,7 +46,11 @@ const flagsSchema = new Schema<User["flags"]>(
 
 const metadataSchema = new Schema<User["metadata"]>(
   {
-    createdAt: mongoRequired(Date),
+    createdAt: {
+      type: String,
+      required: true,
+      default: () => new Date().toISOString(),
+    },
   },
   { _id: false }
 );
