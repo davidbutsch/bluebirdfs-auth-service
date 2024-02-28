@@ -1,11 +1,17 @@
-import { Session } from "..";
 import { inject, injectable } from "tsyringe";
-import { ISessionRepository, ISessionService } from "@/modules/session";
+import {
+  Session,
+  ISessionRepository,
+  ISessionService,
+} from "@/modules/session";
+import { ACCESS_TOKEN_LIFETIME, generateToken } from "@/common";
+import { Types } from "mongoose";
 
 @injectable()
 export class SessionService implements ISessionService {
   constructor(
-    @inject("SessionRepository") private sessionRepository: ISessionRepository
+    @inject("SessionRepository")
+    private sessionRepository: ISessionRepository
   ) {}
 
   findById(id: string): Promise<Session | null> {
@@ -17,10 +23,28 @@ export class SessionService implements ISessionService {
   findByRefreshToken(rt: string): Promise<Session | null> {
     return this.sessionRepository.findByRefreshToken(rt);
   }
+  async create(userId: string | Types.ObjectId): Promise<Session> {
+    return this.sessionRepository.create(userId);
+  }
   isSessionExpired(session: Session): boolean {
     const currentDate = new Date();
     const expiresAtDate = new Date(session.expiresAt);
 
     return currentDate > expiresAtDate;
+  }
+  async refreshSession(session: Session): Promise<Session> {
+    const currentDate = new Date();
+    const expiresAtDate = new Date(
+      currentDate.getTime() + ACCESS_TOKEN_LIFETIME
+    );
+
+    session.accessToken = generateToken();
+    session.refreshToken = generateToken();
+
+    session.expiresAt = expiresAtDate.toISOString();
+
+    const updatedSession = await this.sessionRepository.update(session);
+
+    return updatedSession;
   }
 }
