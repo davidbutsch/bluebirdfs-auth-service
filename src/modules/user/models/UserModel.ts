@@ -29,6 +29,13 @@ const preferencesSchema = new Schema<User["preferences"]>(
   { _id: false }
 );
 
+const securitySchema = new Schema<User["security"]>(
+  {
+    password: { type: String, default: null },
+  },
+  { _id: false }
+);
+
 const flagsSchema = new Schema<User["flags"]>(
   {
     isEmailVerified: mongoRequired(Boolean),
@@ -46,6 +53,7 @@ const metadataSchema = new Schema<User["metadata"]>(
 export const userSchema = new Schema<User, UserModelType>({
   profile: profileSchema,
   preferences: preferencesSchema,
+  security: securitySchema,
   flags: flagsSchema,
   metadata: metadataSchema,
 });

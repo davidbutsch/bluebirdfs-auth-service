@@ -1,5 +1,8 @@
+import { IsNullable } from "@/common";
 import { IsString } from "class-validator";
 
 export class UserSecurity {
-  @IsString() password: string;
+  @IsNullable()
+  @IsString()
+  password: string;
 }
