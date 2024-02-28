@@ -52,11 +52,11 @@ const metadataSchema = new Schema<User["metadata"]>(
 );
 
 export const userSchema = new Schema<User, UserModelType>({
-  profile: profileSchema,
-  preferences: preferencesSchema,
-  security: securitySchema,
-  flags: flagsSchema,
-  metadata: metadataSchema,
+  profile: mongoRequired(profileSchema),
+  preferences: mongoRequired(preferencesSchema),
+  security: mongoRequired(securitySchema),
+  flags: mongoRequired(flagsSchema),
+  metadata: mongoRequired(metadataSchema),
 });
 
 export const UserModel = model<User, UserModelType>("User", userSchema);
