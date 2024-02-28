@@ -24,7 +24,21 @@ export class SessionService implements ISessionService {
     return this.sessionRepository.findByRefreshToken(rt);
   }
   async create(userId: string | Types.ObjectId): Promise<Session> {
-    return this.sessionRepository.create(userId);
+    const currentDate = new Date();
+    const expiresAtDate = new Date(
+      currentDate.getTime() + ACCESS_TOKEN_LIFETIME
+    );
+
+    const newSession: Session = {
+      id: generateToken(),
+      userId: userId.toString(),
+      accessToken: generateToken(),
+      refreshToken: generateToken(),
+      expiresAt: expiresAtDate.toISOString(),
+      updatedAt: currentDate.toISOString(),
+    };
+
+    return this.sessionRepository.create(newSession);
   }
   isSessionExpired(session: Session): boolean {
     const currentDate = new Date();

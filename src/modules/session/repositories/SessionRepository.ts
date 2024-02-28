@@ -61,29 +61,15 @@ export class SessionRepository implements ISessionRepository {
 
     return null;
   }
-  async create(userId: Types.ObjectId | string) {
-    const currentDate = new Date();
-    const expiresAtDate = new Date(
-      currentDate.getTime() + ACCESS_TOKEN_LIFETIME
-    );
-
-    const newSession: Session = {
-      id: generateToken(),
-      userId: userId.toString(),
-      accessToken: generateToken(),
-      refreshToken: generateToken(),
-      expiresAt: expiresAtDate.toISOString(),
-      updatedAt: currentDate.toISOString(),
-    };
-
+  async create(session: Session) {
     await redis.call(
       "JSON.SET",
-      `session:${newSession.id}`,
+      `session:${session.id}`,
       "$",
-      JSON.stringify(newSession)
+      JSON.stringify(session)
     );
 
-    return newSession;
+    return session;
   }
   async update(session: Session) {
     const currentDate = new Date();
