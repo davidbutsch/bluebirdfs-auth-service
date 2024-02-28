@@ -6,4 +6,5 @@ export interface ISessionRepository {
   findByAccessToken(at: string): Promise<Session | null>;
   findByRefreshToken(rt: string): Promise<Session | null>;
   create(userId: Types.ObjectId | string): Promise<Session>;
+  update(session: Session): Promise<Session>;
 }

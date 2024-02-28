@@ -85,4 +85,18 @@ export class SessionRepository implements ISessionRepository {
 
     return newSession;
   }
+  async update(session: Session) {
+    const currentDate = new Date();
+
+    session.updatedAt = currentDate.toISOString();
+
+    await redis.call(
+      "JSON.SET",
+      `session:${session.id}`,
+      "$",
+      JSON.stringify(session)
+    );
+
+    return session;
+  }
 }
