@@ -11,6 +11,7 @@ import { BASE_PATH, config } from "@/common";
 import express, { Express } from "express";
 
 import { AppError } from "@/errors";
+import { SessionController } from "@/modules/session";
 import { StatusCodes } from "http-status-codes";
 import { UserController } from "@/modules/user";
 import cookieParser from "cookie-parser";
@@ -49,7 +50,7 @@ securityMiddleware(app);
 standardMiddleware(app);
 
 useExpressServer(app, {
-  controllers: [UserController],
+  controllers: [UserController, SessionController],
   routePrefix: BASE_PATH,
   defaultErrorHandler: false,
   middlewares: [
