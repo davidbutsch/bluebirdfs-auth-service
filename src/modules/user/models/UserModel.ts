@@ -20,6 +20,7 @@ const preferencesSchema = new Schema<User["preferences"]>(
     language: {
       type: String,
       required: true,
+      default: "en",
       validate: {
         validator: validateISO6381,
       },
@@ -55,10 +56,10 @@ const metadataSchema = new Schema<User["metadata"]>(
 
 export const userSchema = new Schema<User, UserModelType>({
   profile: { type: profileSchema, required: true },
-  preferences: { type: preferencesSchema, required: true },
-  security: { type: securitySchema, required: true },
-  flags: { type: flagsSchema, required: true },
-  metadata: { type: metadataSchema, required: true },
+  preferences: { type: preferencesSchema, required: true, default: {} },
+  security: { type: securitySchema, required: true, default: {} },
+  flags: { type: flagsSchema, required: true, default: {} },
+  metadata: { type: metadataSchema, required: true, default: {} },
 });
 
 export const UserModel = model<User, UserModelType>("User", userSchema);
