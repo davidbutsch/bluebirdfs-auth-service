@@ -67,13 +67,11 @@ export class UserService implements IUserService {
         thumbnail: "https://notimplemented.com/cdn/thumbnail.png", // TODO add thumbnail link utility
       },
       security: {
-        password: user.password,
+        password: await bcrypt.hash(user.password, 10),
       },
     };
 
     const newUserDoc = await this.userRepository.create(newUser);
-
-    console.log(newUserDoc);
 
     return UserDTO.toDTO(newUserDoc);
   }
