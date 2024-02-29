@@ -1,1 +1,1 @@
-export * from "./mongoRequired";
+export * from ".";

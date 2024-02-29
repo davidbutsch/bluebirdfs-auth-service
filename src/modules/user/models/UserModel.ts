@@ -1,17 +1,16 @@
 import { Model, Schema, model } from "mongoose";
 
 import { User } from "..";
-import { mongoRequired } from "@/common";
 import { validateISO6381 } from "@/common";
 
 type UserModelType = Model<User>;
 
 const profileSchema = new Schema<User["profile"]>(
   {
-    firstName: mongoRequired(String),
-    lastName: mongoRequired(String),
-    email: mongoRequired(String),
-    thumbnail: mongoRequired(String),
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    thumbnail: { type: String, required: true },
   },
   { _id: false }
 );
@@ -56,11 +55,11 @@ const metadataSchema = new Schema<User["metadata"]>(
 );
 
 export const userSchema = new Schema<User, UserModelType>({
-  profile: mongoRequired(profileSchema),
-  preferences: mongoRequired(preferencesSchema),
-  security: mongoRequired(securitySchema),
-  flags: mongoRequired(flagsSchema),
-  metadata: mongoRequired(metadataSchema),
+  profile: { type: profileSchema, required: true },
+  preferences: { type: preferencesSchema, required: true },
+  security: { type: securitySchema, required: true },
+  flags: { type: flagsSchema, required: true },
+  metadata: { type: metadataSchema, required: true },
 });
 
 export const UserModel = model<User, UserModelType>("User", userSchema);
