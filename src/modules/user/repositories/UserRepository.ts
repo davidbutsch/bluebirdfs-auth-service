@@ -14,8 +14,8 @@ export class UserRepository implements IUserRepository {
   ): Promise<(User & Document) | null> {
     return UserModel.findOne({ "profile.email": email }, null, options);
   }
-  create(User: Partial<User>): Promise<User & Document> {
-    throw new Error("Method not implemented.");
+  create(user: Partial<User>): Promise<User & Document> {
+    return UserModel.create(user);
   }
   update(
     id: string | Types.ObjectId | undefined,

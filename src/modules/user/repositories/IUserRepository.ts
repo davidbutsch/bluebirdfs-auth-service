@@ -11,7 +11,7 @@ export interface IUserRepository {
     email: string,
     options?: QueryOptions
   ): Promise<(User & Document) | null>;
-  create(User: Partial<User>): Promise<User & Document>;
+  create(user: Partial<User>): Promise<User & Document>;
   update(
     id: Types.ObjectId | string | undefined,
     update: UpdateQuery<User & Document>

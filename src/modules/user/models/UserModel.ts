@@ -20,7 +20,6 @@ const preferencesSchema = new Schema<User["preferences"]>(
     language: {
       type: String,
       required: true,
-      default: "en",
       validate: {
         validator: validateISO6381,
       },

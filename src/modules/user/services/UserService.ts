@@ -1,5 +1,11 @@
 import { Error, Types } from "mongoose";
-import { IUserRepository, User, UserDTO, IUserService } from "@/modules/user";
+import {
+  IUserRepository,
+  UserDTO,
+  IUserService,
+  CreateUserDTO,
+  User,
+} from "@/modules/user";
 
 import { CredentialsDTO } from "@/modules/session";
 import { inject, injectable } from "tsyringe";
@@ -42,8 +48,34 @@ export class UserService implements IUserService {
 
     return UserDTO.toDTO(user);
   }
-  create(user: Partial<User>): Promise<UserDTO> {
-    throw new Error("Method not implemented.");
+  async create(user: CreateUserDTO): Promise<UserDTO> {
+    const userWithThisEmail = await this.userRepository.findByEmail(
+      user.email,
+      {
+        lean: true,
+      }
+    );
+
+    if (userWithThisEmail)
+      throw new AppError(StatusCodes.CONFLICT, "Email already taken");
+
+    const newUser: Partial<User> = {
+      profile: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        thumbnail: "https://notimplemented.com/cdn/thumbnail.png", // TODO add thumbnail link utility
+      },
+      security: {
+        password: user.password,
+      },
+    };
+
+    const newUserDoc = await this.userRepository.create(newUser);
+
+    console.log(newUserDoc);
+
+    return UserDTO.toDTO(newUserDoc);
   }
   updateName(id: string, update: string): Promise<UserDTO | null> {
     throw new Error("Method not implemented.");
