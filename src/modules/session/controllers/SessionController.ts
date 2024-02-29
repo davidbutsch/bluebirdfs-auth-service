@@ -1,10 +1,16 @@
-import { Body, JsonController, Post, Req, Res } from "routing-controllers";
+import {
+  Body,
+  CookieParam,
+  JsonController,
+  Post,
+  Res,
+} from "routing-controllers";
 
 import { CredentialsDTO, ISessionService } from "@/modules/session";
 import { inject, injectable } from "tsyringe";
 import { AppError } from "@/errors";
 import { StatusCodes } from "http-status-codes";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { sessionCookieConfig } from "@/common";
 import { IUserService } from "@/modules/user";
 
@@ -18,13 +24,12 @@ export class SessionController {
 
   @Post("/")
   async createSession(
-    @Req() req: Request,
     @Res() res: Response,
-    @Body() credentials: CredentialsDTO
+    @Body() credentials: CredentialsDTO,
+    @CookieParam("rt") refreshToken: string
   ) {
     const user = await this.userService.authenticateUser(credentials);
 
-    const refreshToken = req.cookies.rt;
     const session = await this.sessionService.findByRefreshToken(refreshToken);
 
     if (session)
@@ -32,7 +37,7 @@ export class SessionController {
 
     const newSession = await this.sessionService.create(user.id);
 
-    res
+    return res
       .cookie("at", newSession.accessToken, sessionCookieConfig)
       .cookie("rt", newSession.refreshToken, sessionCookieConfig)
       .status(201)
@@ -40,8 +45,10 @@ export class SessionController {
   }
 
   @Post("/tokens")
-  async createTokens(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies.rt;
+  async createTokens(
+    @Res() res: Response,
+    @CookieParam("rt") refreshToken: string
+  ) {
     const session = await this.sessionService.findByRefreshToken(refreshToken);
 
     if (!session)
@@ -49,7 +56,7 @@ export class SessionController {
 
     const refreshedSession = await this.sessionService.refreshSession(session);
 
-    res
+    return res
       .cookie("at", refreshedSession.accessToken, sessionCookieConfig)
       .cookie("rt", refreshedSession.refreshToken, sessionCookieConfig)
       .json({ data: { message: "Success" } });
