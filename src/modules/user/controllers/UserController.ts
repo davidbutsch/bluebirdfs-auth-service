@@ -1,4 +1,4 @@
-import { Body, Get, JsonController, Post } from "routing-controllers";
+import { Body, Get, HttpCode, JsonController, Post } from "routing-controllers";
 
 import { CreateUserDTO, IUserService } from "@/modules/user";
 import { inject, injectable } from "tsyringe";
@@ -15,6 +15,7 @@ export class UserController {
     throw new AppError(StatusCodes.NOT_IMPLEMENTED, "Route not implemented.");
   }
 
+  @HttpCode(201)
   @Post("/")
   create(@Body() user: CreateUserDTO) {
     return this.userService.create(user);
