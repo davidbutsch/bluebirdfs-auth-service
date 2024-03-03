@@ -21,16 +21,10 @@ export class SessionService implements ISessionService {
   findById(id: string): Promise<Session | null> {
     return this.sessionRepository.findById(id);
   }
-  findByAccessToken(at: string): Promise<Session | null> {
-    return this.sessionRepository.findByAccessToken(at);
-  }
-  findByRefreshToken(rt: string): Promise<Session | null> {
-    return this.sessionRepository.findByRefreshToken(rt);
-  }
   async create(credentials: CredentialsDTO, rt: string): Promise<Session> {
     const user = await this.userService.authenticateUser(credentials);
 
-    const session = await this.findByRefreshToken(rt);
+    const session = await this.sessionRepository.findByRefreshToken(rt);
 
     if (session)
       throw new AppError(StatusCodes.CONFLICT, "Active session already exists");
@@ -58,7 +52,7 @@ export class SessionService implements ISessionService {
     return currentDate > expiresAtDate;
   }
   async refreshSession(rt: string): Promise<Session> {
-    const session = await this.findByRefreshToken(rt);
+    const session = await this.sessionRepository.findByRefreshToken(rt);
 
     if (!session)
       throw new AppError(StatusCodes.UNAUTHORIZED, "Session not found");
