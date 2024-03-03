@@ -19,12 +19,12 @@ export class UserService implements IUserService {
     @inject("UserRepository") private userRepository: IUserRepository
   ) {}
 
-  async findById(id: string): Promise<UserDTO | null> {
+  async findById(id: string): Promise<UserDTO> {
     const user = await this.userRepository.findById(id);
 
-    if (user) return UserDTO.toDTO(user);
+    if (!user) throw new AppError(StatusCodes.NOT_FOUND, "User not found");
 
-    return null;
+    return UserDTO.toDTO(user);
   }
   async authenticateUser(credentials: CredentialsDTO): Promise<UserDTO> {
     const user = await this.userRepository.findByEmail(credentials.email);
