@@ -3,15 +3,19 @@ import {
   Session,
   ISessionRepository,
   ISessionService,
+  CredentialsDTO,
 } from "@/modules/session";
 import { ACCESS_TOKEN_LIFETIME, generateToken } from "@/common";
-import { Types } from "mongoose";
+import { IUserService } from "@/modules/user";
+import { AppError } from "@/errors";
+import { StatusCodes } from "http-status-codes";
 
 @injectable()
 export class SessionService implements ISessionService {
   constructor(
     @inject("SessionRepository")
-    private sessionRepository: ISessionRepository
+    private sessionRepository: ISessionRepository,
+    @inject("UserService") private userService: IUserService
   ) {}
 
   findById(id: string): Promise<Session | null> {
@@ -23,7 +27,14 @@ export class SessionService implements ISessionService {
   findByRefreshToken(rt: string): Promise<Session | null> {
     return this.sessionRepository.findByRefreshToken(rt);
   }
-  async create(userId: string | Types.ObjectId): Promise<Session> {
+  async create(credentials: CredentialsDTO, rt: string): Promise<Session> {
+    const user = await this.userService.authenticateUser(credentials);
+
+    const session = await this.findByRefreshToken(rt);
+
+    if (session)
+      throw new AppError(StatusCodes.CONFLICT, "Active session already exists");
+
     const currentDate = new Date();
     const expiresAtDate = new Date(
       currentDate.getTime() + ACCESS_TOKEN_LIFETIME
@@ -31,7 +42,7 @@ export class SessionService implements ISessionService {
 
     const newSession: Session = {
       id: generateToken(),
-      userId: userId.toString(),
+      userId: user.id,
       accessToken: generateToken(),
       refreshToken: generateToken(),
       expiresAt: expiresAtDate.toISOString(),
@@ -46,7 +57,12 @@ export class SessionService implements ISessionService {
 
     return currentDate > expiresAtDate;
   }
-  async refreshSession(session: Session): Promise<Session> {
+  async refreshSession(rt: string): Promise<Session> {
+    const session = await this.findByRefreshToken(rt);
+
+    if (!session)
+      throw new AppError(StatusCodes.UNAUTHORIZED, "Session not found");
+
     const currentDate = new Date();
     const expiresAtDate = new Date(
       currentDate.getTime() + ACCESS_TOKEN_LIFETIME

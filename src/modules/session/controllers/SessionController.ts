@@ -8,18 +8,14 @@ import {
 
 import { CredentialsDTO, ISessionService } from "@/modules/session";
 import { inject, injectable } from "tsyringe";
-import { AppError } from "@/errors";
-import { StatusCodes } from "http-status-codes";
 import { Response } from "express";
 import { sessionCookieConfig } from "@/common";
-import { IUserService } from "@/modules/user";
 
 @injectable()
 @JsonController("/sessions")
 export class SessionController {
   constructor(
-    @inject("SessionService") private sessionService: ISessionService,
-    @inject("UserService") private userService: IUserService
+    @inject("SessionService") private sessionService: ISessionService
   ) {}
 
   @Post("/")
@@ -28,14 +24,10 @@ export class SessionController {
     @Body() credentials: CredentialsDTO,
     @CookieParam("rt") refreshToken: string
   ) {
-    const user = await this.userService.authenticateUser(credentials);
-
-    const session = await this.sessionService.findByRefreshToken(refreshToken);
-
-    if (session)
-      throw new AppError(StatusCodes.CONFLICT, "Active session already exists");
-
-    const newSession = await this.sessionService.create(user.id);
+    const newSession = await this.sessionService.create(
+      credentials,
+      refreshToken
+    );
 
     return res
       .cookie("at", newSession.accessToken, sessionCookieConfig)
@@ -49,12 +41,9 @@ export class SessionController {
     @Res() res: Response,
     @CookieParam("rt") refreshToken: string
   ) {
-    const session = await this.sessionService.findByRefreshToken(refreshToken);
-
-    if (!session)
-      throw new AppError(StatusCodes.UNAUTHORIZED, "Session not found");
-
-    const refreshedSession = await this.sessionService.refreshSession(session);
+    const refreshedSession = await this.sessionService.refreshSession(
+      refreshToken
+    );
 
     return res
       .cookie("at", refreshedSession.accessToken, sessionCookieConfig)
