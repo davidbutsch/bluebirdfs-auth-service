@@ -18,8 +18,13 @@ export class SessionService implements ISessionService {
     @inject("UserService") private userService: IUserService
   ) {}
 
-  findById(id: string): Promise<Session | null> {
-    return this.sessionRepository.findById(id);
+  async findById(id: string): Promise<Session> {
+    const session = await this.sessionRepository.findById(id);
+
+    if (!session)
+      throw new AppError(StatusCodes.NOT_FOUND, "Session not found");
+
+    return session;
   }
   async create(credentials: CredentialsDTO, rt: string): Promise<Session> {
     const user = await this.userService.authenticateUser(credentials);
