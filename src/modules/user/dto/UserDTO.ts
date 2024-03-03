@@ -1,9 +1,4 @@
-import {
-  IsDefined,
-  IsNotEmptyObject,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsNotEmptyObject, IsString, ValidateNested } from "class-validator";
 import {
   User,
   UserFlags,
@@ -18,25 +13,21 @@ import { Type } from "class-transformer";
 export class UserDTO {
   @IsString() id: string;
 
-  @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => UserProfile)
   profile: UserProfile;
 
-  @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => UserPreferences)
   preferences: UserPreferences;
 
-  @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => UserFlags)
   flags: UserFlags;
 
-  @IsDefined()
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => UserMetadata)

@@ -14,7 +14,8 @@ export interface IUserRepository {
   create(user: Partial<User>): Promise<User & Document>;
   update(
     id: Types.ObjectId | string | undefined,
-    update: UpdateQuery<User & Document>
+    update: UpdateQuery<User & Document>,
+    options?: QueryOptions<User & Document>
   ): Promise<(User & Document) | null>;
   delete(id: Types.ObjectId | string | undefined): Promise<void>;
 }

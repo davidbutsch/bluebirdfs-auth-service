@@ -4,6 +4,7 @@ import {
   UserDTO,
   IUserService,
   CreateUserDTO,
+  UpdateUserDTO,
   User,
 } from "@/modules/user";
 
@@ -12,6 +13,7 @@ import { inject, injectable } from "tsyringe";
 import { AppError } from "@/errors";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
+import { objectToDotNotation } from "@/common";
 
 @injectable()
 export class UserService implements IUserService {
@@ -75,8 +77,19 @@ export class UserService implements IUserService {
 
     return UserDTO.toDTO(newUserDoc);
   }
-  updateName(id: string, update: string): Promise<UserDTO | null> {
-    throw new Error("Method not implemented.");
+  async update(id: string, update: UpdateUserDTO): Promise<UserDTO> {
+    const updatedUserDoc = await this.userRepository.update(
+      id,
+      { $set: objectToDotNotation(update) },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedUserDoc)
+      throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+
+    return UserDTO.toDTO(updatedUserDoc);
   }
   delete(id: string | Types.ObjectId | undefined): Promise<void> {
     throw new Error("Method not implemented.");

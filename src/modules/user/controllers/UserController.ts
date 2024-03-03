@@ -1,8 +1,10 @@
 import {
   Body,
+  Delete,
   Get,
   HttpCode,
   JsonController,
+  Patch,
   Post,
   Res,
   UseBefore,
@@ -10,7 +12,7 @@ import {
 
 import { Response } from "express";
 
-import { CreateUserDTO, IUserService } from "@/modules/user";
+import { CreateUserDTO, IUserService, UpdateUserDTO } from "@/modules/user";
 import { inject, injectable } from "tsyringe";
 import { AttachSession } from "@/middlewares";
 
@@ -31,5 +33,20 @@ export class UserController {
   @Post("/")
   create(@Body() user: CreateUserDTO) {
     return this.userService.create(user);
+  }
+
+  @UseBefore(AttachSession)
+  @Patch("/me")
+  updateMe(
+    @Res() res: Response,
+    @Body({
+      validate: {
+        skipUndefinedProperties: true,
+      },
+    })
+    userUpdate: UpdateUserDTO
+  ) {
+    const session = res.locals.session;
+    return this.userService.update(session.userId, userUpdate);
   }
 }
