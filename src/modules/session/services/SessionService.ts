@@ -26,14 +26,7 @@ export class SessionService implements ISessionService {
 
     return session;
   }
-  async create(credentials: CredentialsDTO, rt: string): Promise<Session> {
-    const user = await this.userService.authenticateUser(credentials);
-
-    const session = await this.sessionRepository.findByRefreshToken(rt);
-
-    if (session)
-      throw new AppError(StatusCodes.CONFLICT, "Active session already exists");
-
+  async create(userId: string): Promise<Session> {
     const currentDate = new Date();
     const expiresAtDate = new Date(
       currentDate.getTime() + ACCESS_TOKEN_LIFETIME
@@ -41,7 +34,7 @@ export class SessionService implements ISessionService {
 
     const newSession: Session = {
       id: generateToken(),
-      userId: user.id,
+      userId: userId,
       accessToken: generateToken(),
       refreshToken: generateToken(),
       expiresAt: expiresAtDate.toISOString(),
@@ -49,6 +42,11 @@ export class SessionService implements ISessionService {
     };
 
     return this.sessionRepository.create(newSession);
+  }
+  async createFromCredentials(credentials: CredentialsDTO): Promise<Session> {
+    const user = await this.userService.authenticateUser(credentials);
+
+    return this.create(user.id);
   }
   isSessionExpired(session: Session): boolean {
     const currentDate = new Date();

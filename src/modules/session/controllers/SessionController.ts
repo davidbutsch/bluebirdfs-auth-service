@@ -21,12 +21,10 @@ export class SessionController {
   @Post("/")
   async createSession(
     @Res() res: Response,
-    @Body() credentials: CredentialsDTO,
-    @CookieParam("rt") refreshToken: string
+    @Body() credentials: CredentialsDTO
   ) {
-    const newSession = await this.sessionService.create(
-      credentials,
-      refreshToken
+    const newSession = await this.sessionService.createFromCredentials(
+      credentials
     );
 
     return res
