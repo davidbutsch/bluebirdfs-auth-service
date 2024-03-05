@@ -23,21 +23,29 @@ export class UserController {
 
   @UseBefore(AttachSession)
   @Get("/me")
-  getMe(@Res() res: Response) {
+  async getMe(@Res() res: Response) {
     const session = res.locals.session;
 
-    return this.userService.findById(session.userId);
+    const user = await this.userService.findById(session.userId);
+
+    return {
+      data: { user },
+    };
   }
 
   @HttpCode(201)
   @Post("/")
-  create(@Body() user: CreateUserDTO) {
-    return this.userService.create(user);
+  async create(@Body() user: CreateUserDTO) {
+    const newUser = await this.userService.create(user);
+
+    return {
+      data: { user: newUser },
+    };
   }
 
   @UseBefore(AttachSession)
   @Patch("/me")
-  updateMe(
+  async updateMe(
     @Res() res: Response,
     @Body({
       validate: {
@@ -47,6 +55,11 @@ export class UserController {
     userUpdate: UpdateUserDTO
   ) {
     const session = res.locals.session;
-    return this.userService.update(session.userId, userUpdate);
+
+    const user = await this.userService.update(session.userId, userUpdate);
+
+    return {
+      data: { user },
+    };
   }
 }

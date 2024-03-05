@@ -25,7 +25,11 @@ export class GoogleOAuth2Controller {
 
   @Get("/url")
   getAuthUrl() {
-    return this.googleOAuth2Service.getAuthUrl();
+    const url = this.googleOAuth2Service.getAuthUrl();
+
+    return {
+      data: { url },
+    };
   }
 
   @Redirect(SERVICE_HOME_PATH)
