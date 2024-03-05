@@ -8,7 +8,7 @@ type UserModelType = Model<User>;
 const profileSchema = new Schema<User["profile"]>(
   {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
     email: { type: String, required: true },
     thumbnail: { type: String, required: true },
   },
