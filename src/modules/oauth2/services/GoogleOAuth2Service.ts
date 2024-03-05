@@ -2,7 +2,7 @@ import { Credentials as GoogleCredentials } from "google-auth-library";
 import { IOAuth2Service } from "@/modules/oauth2";
 import { config } from "@/common";
 import { google } from "googleapis";
-import { IUserRepository, IUserService, UserDTO } from "@/modules/user";
+import { IUserRepository, IUserService, User, UserDTO } from "@/modules/user";
 import { inject, injectable } from "tsyringe";
 import { AppError } from "@/errors";
 import { StatusCodes } from "http-status-codes";
@@ -60,7 +60,7 @@ export class GoogleOAuth2Service implements IOAuth2Service {
         "Missing Google user email key"
       );
 
-    let user: UserDTO;
+    let userDoc: User;
 
     const userWithThisEmail = await this.userRepository.findByEmail(
       data.email,
@@ -69,14 +69,22 @@ export class GoogleOAuth2Service implements IOAuth2Service {
       }
     );
 
-    if (!userWithThisEmail)
-      user = await this.userService.create({
-        email: data.email,
-        firstName: data.given_name,
-        lastName: data.family_name || undefined,
-      });
-    else user = UserDTO.toDTO(userWithThisEmail);
+    if (userWithThisEmail) userDoc = userWithThisEmail;
+    else {
+      const newUser: Partial<User> = {
+        profile: {
+          email: data.email,
+          firstName: data.given_name,
+          lastName: data.family_name || undefined,
+          thumbnail: data.picture || "nogooglethumbnail", // TODO: thumbnail utility
+        },
+      };
 
-    return user;
+      const newUserDoc = await this.userRepository.create(newUser);
+
+      userDoc = newUserDoc;
+    }
+
+    return UserDTO.toDTO(userDoc);
   }
 }

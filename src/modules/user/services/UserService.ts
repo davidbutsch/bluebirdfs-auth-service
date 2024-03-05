@@ -61,10 +61,6 @@ export class UserService implements IUserService {
     if (userWithThisEmail)
       throw new AppError(StatusCodes.CONFLICT, "Email already taken");
 
-    const password = user.password
-      ? await bcrypt.hash(user.password, 10)
-      : null;
-
     const newUser: Partial<User> = {
       profile: {
         email: user.email,
@@ -73,7 +69,7 @@ export class UserService implements IUserService {
         thumbnail: "https://notimplemented.com/cdn/thumbnail.png", // TODO add thumbnail link utility
       },
       security: {
-        password,
+        password: await bcrypt.hash(user.password, 10),
       },
     };
 
