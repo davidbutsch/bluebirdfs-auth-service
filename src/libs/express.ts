@@ -11,6 +11,7 @@ import { BASE_PATH, config } from "@/common";
 import express, { Express } from "express";
 
 import { AppError } from "@/errors";
+import { GoogleOAuth2Controller } from "@/modules/oauth2";
 import { SessionController } from "@/modules/session";
 import { StatusCodes } from "http-status-codes";
 import { UserController } from "@/modules/user";
@@ -50,7 +51,7 @@ securityMiddleware(app);
 standardMiddleware(app);
 
 useExpressServer(app, {
-  controllers: [UserController, SessionController],
+  controllers: [UserController, SessionController, GoogleOAuth2Controller],
   routePrefix: BASE_PATH,
   defaultErrorHandler: false,
   validation: {
