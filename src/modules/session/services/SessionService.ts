@@ -44,7 +44,7 @@ export class SessionService implements ISessionService {
     return this.sessionRepository.create(newSession);
   }
   async createFromCredentials(credentials: CredentialsDTO): Promise<Session> {
-    const user = await this.userService.authenticateUser(credentials);
+    const user = await this.userService.findByCredentials(credentials);
 
     return this.create(user.id);
   }

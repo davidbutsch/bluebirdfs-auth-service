@@ -28,7 +28,7 @@ export class UserService implements IUserService {
 
     return UserDTO.toDTO(user);
   }
-  async authenticateUser(credentials: CredentialsDTO): Promise<UserDTO> {
+  async findByCredentials(credentials: CredentialsDTO): Promise<UserDTO> {
     const user = await this.userRepository.findByEmail(credentials.email);
 
     if (!user)
