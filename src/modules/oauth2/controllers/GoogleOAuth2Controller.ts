@@ -1,6 +1,7 @@
 import {
   Get,
   JsonController,
+  QueryParam,
   QueryParams,
   Redirect,
   Res,
@@ -24,8 +25,8 @@ export class GoogleOAuth2Controller {
   ) {}
 
   @Get("/url")
-  getAuthUrl() {
-    const url = this.googleOAuth2Service.getAuthUrl();
+  getAuthUrl(@QueryParam("redirectUrl") redirectUrl: string) {
+    const url = this.googleOAuth2Service.getAuthUrl({ redirectUrl });
 
     return {
       data: { url },
