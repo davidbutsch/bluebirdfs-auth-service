@@ -1,25 +1,34 @@
 import {
   Body,
-  Delete,
   Get,
+  Head,
   HttpCode,
   JsonController,
   Patch,
   Post,
+  QueryParam,
   Res,
   UseBefore,
 } from "routing-controllers";
 
 import { Response } from "express";
 
-import { CreateUserDTO, IUserService, UpdateUserDTO } from "@/modules/user";
+import {
+  CreateUserDTO,
+  IUserRepository,
+  IUserService,
+  UpdateUserDTO,
+} from "@/modules/user";
 import { inject, injectable } from "tsyringe";
 import { AttachSession } from "@/middlewares";
 
 @injectable()
 @JsonController("/users")
 export class UserController {
-  constructor(@inject("UserService") private userService: IUserService) {}
+  constructor(
+    @inject("UserService") private userService: IUserService,
+    @inject("UserRepository") private userRepository: IUserRepository
+  ) {}
 
   @UseBefore(AttachSession)
   @Get("/me")
@@ -31,6 +40,17 @@ export class UserController {
     return {
       data: { user },
     };
+  }
+
+  @Head("/")
+  async checkUserWithEmailExists(
+    @QueryParam("email") email: string,
+    @Res() res: Response
+  ) {
+    const user = await this.userRepository.findByEmail(email, { lean: true });
+
+    if (user) return res.status(200).end();
+    else return res.status(404).end();
   }
 
   @HttpCode(201)
