@@ -6,4 +6,5 @@ export interface ISessionService {
   createFromCredentials(credentials: CredentialsDTO): Promise<Session>;
   isSessionExpired(session: Session): boolean;
   refreshSession(rt: string): Promise<Session>;
+  deleteSessionByRefreshToken(rt: string): Promise<void>;
 }

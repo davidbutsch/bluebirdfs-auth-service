@@ -1,6 +1,7 @@
 import {
   Body,
   CookieParam,
+  Delete,
   JsonController,
   Post,
   Res,
@@ -31,6 +32,19 @@ export class SessionController {
       .cookie("at", newSession.accessToken, sessionCookieConfig)
       .cookie("rt", newSession.refreshToken, sessionCookieConfig)
       .status(201)
+      .json({ data: { message: "Success" } });
+  }
+
+  @Delete("/")
+  async deleteSession(
+    @Res() res: Response,
+    @CookieParam("rt") refreshToken: string
+  ) {
+    await this.sessionService.deleteSessionByRefreshToken(refreshToken);
+
+    return res
+      .clearCookie("at")
+      .clearCookie("rt")
       .json({ data: { message: "Success" } });
   }
 

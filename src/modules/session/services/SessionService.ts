@@ -74,4 +74,12 @@ export class SessionService implements ISessionService {
 
     return updatedSession;
   }
+  async deleteSessionByRefreshToken(rt: string): Promise<void> {
+    const session = await this.sessionRepository.findByRefreshToken(rt);
+
+    if (!session)
+      throw new AppError(StatusCodes.NOT_FOUND, "Session not found");
+
+    await this.sessionRepository.delete(session);
+  }
 }

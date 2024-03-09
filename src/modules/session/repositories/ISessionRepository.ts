@@ -6,4 +6,5 @@ export interface ISessionRepository {
   findByRefreshToken(rt: string): Promise<Session | null>;
   create(session: Session): Promise<Session>;
   update(session: Session): Promise<Session>;
+  delete(session: Session): Promise<void>;
 }

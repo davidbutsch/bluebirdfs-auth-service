@@ -85,4 +85,7 @@ export class SessionRepository implements ISessionRepository {
 
     return session;
   }
+  async delete(session: Session): Promise<void> {
+    await redis.call("JSON.DEL", `session:${session.id}`);
+  }
 }
