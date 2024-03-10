@@ -13,7 +13,7 @@ import { inject, injectable } from "tsyringe";
 import { AppError } from "@/errors";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
-import { objectToDotNotation } from "@/common";
+import { objectToDotNotation, userThumbnailFromText } from "@/common";
 
 @injectable()
 export class UserService implements IUserService {
@@ -66,7 +66,7 @@ export class UserService implements IUserService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        thumbnail: "https://notimplemented.com/cdn/thumbnail.png", // TODO add thumbnail link utility
+        thumbnail: userThumbnailFromText(user.firstName),
       },
       security: {
         password: await bcrypt.hash(user.password, 10),

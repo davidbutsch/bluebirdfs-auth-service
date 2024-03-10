@@ -1,6 +1,6 @@
 import { Credentials as GoogleCredentials } from "google-auth-library";
 import { IOAuth2Service } from "@/modules/oauth2";
-import { config } from "@/common";
+import { config, userThumbnailFromText } from "@/common";
 import { google } from "googleapis";
 import { IUserRepository, IUserService, User, UserDTO } from "@/modules/user";
 import { inject, injectable } from "tsyringe";
@@ -76,7 +76,7 @@ export class GoogleOAuth2Service implements IOAuth2Service {
           email: data.email,
           firstName: data.given_name,
           lastName: data.family_name || undefined,
-          thumbnail: data.picture || "nogooglethumbnail", // TODO: thumbnail utility
+          thumbnail: data.picture || userThumbnailFromText(data.given_name), // TODO: thumbnail utility
         },
       };
 
